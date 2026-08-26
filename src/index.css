@@ -1,0 +1,168 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", "Cascadia Code", "JetBrains Mono", Consolas,
+    "Liberation Mono", monospace;
+
+  /* Industrial Intelligence · 暖白 Light 主题 */
+  --color-paper: #f7f6f2; /* 页面底色（暖白） */
+  --color-surface: #ffffff;
+  --color-ink: #1c1b19; /* 主正文（深灰黑） */
+  --color-ink-2: #5e5c55; /* 次级文字 */
+  --color-ink-3: #97948b; /* 弱化文字 */
+  --color-line: #e6e3db; /* 主分隔线 */
+  --color-line-2: #f0eee8; /* 更浅分隔线 */
+
+  --color-accent: #1e5aa8; /* 单一克制主色（工业蓝） */
+  --color-accent-deep: #174a8d;
+  --color-accent-soft: #ecf2fa;
+
+  --color-green: #3e7c52; /* 成功 */
+  --color-green-soft: #edf4ef;
+  --color-amber: #a26f1d; /* 需关注 */
+  --color-amber-deep: #875c15;
+  --color-amber-soft: #fbf3e1;
+  --color-red: #ae3b33; /* 真正冲突 */
+  --color-red-soft: #fbebed;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* 数字统一等宽，表格/金额更清晰 */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+.font-mono {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- 滚动出现（克制、平滑） ---- */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 0.61, 0.21, 1),
+    transform 0.7s cubic-bezier(0.22, 0.61, 0.21, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---- keyframes ---- */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes flowRight {
+  0% {
+    left: 0%;
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+@keyframes pulseRing {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.55;
+  }
+  80%,
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+@keyframes barFill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes checkPop {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.55s cubic-bezier(0.22, 0.61, 0.21, 1) both;
+}
+.animate-fade-in {
+  animation: fadeIn 0.5s ease both;
+}
+.animate-bar {
+  transform-origin: left;
+  animation: barFill 1.2s cubic-bezier(0.22, 0.61, 0.21, 1) both;
+}
+.animate-check {
+  animation: checkPop 0.35s cubic-bezier(0.22, 0.61, 0.21, 1) both;
+}
+
+/* 产品匹配连接线上的流动数据点 */
+.dot-flow {
+  position: absolute;
+  top: -2.5px;
+  width: 5px;
+  height: 5px;
+  border-radius: 9999px;
+  background: var(--color-accent);
+  animation: flowRight 1.9s linear infinite;
+}
+
+/* 数字输入框去 spinner */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
