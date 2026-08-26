@@ -108,6 +108,34 @@ export const pricingRule: PricingRule = {
   suggestedPrice: 18.8,
 };
 
+// 第二项产品因客户要求 10kA 分断能力，采用 HD47H-63 高分断系列。
+// 该项没有可复用的历史成交样本，因此建议价以目录标准价、库存和销售授权区间为依据。
+export const replacementPricingRule: PricingRule = {
+  tier: 'B',
+  tierLabel: 'B级经销商',
+  qty: 200,
+  standardPrice: 46.8,
+  minAuthorized: 44.8,
+  maxAuthorized: 46.8,
+  approvalThreshold: 44.8,
+  suggestedPrice: 46.2,
+};
+
+export const quoteItems = {
+  primary: {
+    name: '小型断路器',
+    sku: 'HD47-63 2P C32',
+    qty: 500,
+    family: '小型断路器 · MCB',
+  },
+  replacement: {
+    name: '高分断小型断路器',
+    sku: 'HD47H-63 4P C63',
+    qty: 200,
+    family: '高分断 · MCB',
+  },
+};
+
 // ---------------- 客户询价 ----------------
 export interface Rfq {
   customer: string;

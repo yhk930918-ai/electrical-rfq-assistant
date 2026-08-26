@@ -15,7 +15,7 @@ import { ValueComparison } from './components/ValueComparison';
 import { LeadCTA } from './components/LeadCTA';
 import { CTAFormModal } from './components/CTAFormModal';
 import { ContextualLeadCTA } from './components/ContextualLeadCTA';
-import { defaultRfq, pricingRule } from './data/mock';
+import { defaultRfq, pricingRule, replacementPricingRule } from './data/mock';
 import { electricalRfqWorkflow } from './config/workflows';
 import { track } from './lib/analytics';
 import type { LeadFormPlacement } from './services/lead';
@@ -49,8 +49,9 @@ export default function App() {
   const [stage, setStage] = useState<Stage>('rfq');
   const [message, setMessage] = useState(defaultRfq.message);
   const [unitPrice, setUnitPrice] = useState(pricingRule.suggestedPrice);
+  const [replacementUnitPrice, setReplacementUnitPrice] = useState(replacementPricingRule.suggestedPrice);
   const [toast, setToast] = useState<string | null>(null);
-  const [priceModal, setPriceModal] = useState(false);
+  const [priceModal, setPriceModal] = useState<'primary' | 'replacement' | null>(null);
   const [leadModal, setLeadModal] = useState(false);
   const [leadFormPlacement, setLeadFormPlacement] = useState<LeadFormPlacement>('final_cta');
 
@@ -183,7 +184,8 @@ export default function App() {
             <QuoteDecision
               stage={stage}
               onAdopt={handleAdopt}
-              onEdit={() => setPriceModal(true)}
+              onEditPrimary={() => setPriceModal('primary')}
+              onEditReplacement={() => setPriceModal('replacement')}
               onApprove={() => notify('已提交经理审批（Demo 演示）')}
             />
           </section>
@@ -192,7 +194,13 @@ export default function App() {
         {/* 05 报价草稿 + 客户回复 */}
         {idx >= 7 && (
           <section ref={quoteRef} className="mx-auto max-w-[1200px] scroll-mt-20 px-5 pb-2 pt-16">
-            <QuotePreview stage={stage} unitPrice={unitPrice} notify={notify} onNext={handleSummary} />
+            <QuotePreview
+              stage={stage}
+              unitPrice={unitPrice}
+              replacementUnitPrice={replacementUnitPrice}
+              notify={notify}
+              onNext={handleSummary}
+            />
           </section>
         )}
 
@@ -220,21 +228,40 @@ export default function App() {
 
       {/* 修改价格弹窗 */}
       <PriceEditModal
-        open={priceModal}
-        suggested={pricingRule.suggestedPrice}
-        min={pricingRule.minAuthorized}
-        max={pricingRule.maxAuthorized}
-        onClose={() => setPriceModal(false)}
+        open={priceModal !== null}
+        productSummary={
+          priceModal === 'replacement'
+            ? 'HD47H-63 4P C63 · 200只'
+            : 'HD47-63 2P C32 · 500只'
+        }
+        suggested={
+          priceModal === 'replacement'
+            ? replacementPricingRule.suggestedPrice
+            : pricingRule.suggestedPrice
+        }
+        min={
+          priceModal === 'replacement'
+            ? replacementPricingRule.minAuthorized
+            : pricingRule.minAuthorized
+        }
+        max={
+          priceModal === 'replacement'
+            ? replacementPricingRule.maxAuthorized
+            : pricingRule.maxAuthorized
+        }
+        onClose={() => setPriceModal(null)}
         onApply={(p) => {
-          setUnitPrice(p);
-          setPriceModal(false);
+          const isReplacement = priceModal === 'replacement';
+          if (isReplacement) setReplacementUnitPrice(p);
+          else setUnitPrice(p);
+          setPriceModal(null);
           setStage('quote');
           track('quotation_generated');
           scrollTo(quoteRef);
-          notify(`已采用 ¥${p.toFixed(2)}`);
+          notify(`已采用${isReplacement ? '第二项' : '第一项'}价格 ¥${p.toFixed(2)}`);
         }}
         onApprove={() => {
-          setPriceModal(false);
+          setPriceModal(null);
           notify('已提交经理审批（Demo 演示）');
         }}
       />

@@ -1,26 +1,27 @@
 import { useState } from 'react';
 import { ArrowRight, Check, Copy, Download } from 'lucide-react';
 import type { Stage } from '../types';
-import { replyText } from '../data/mock';
+import { quoteItems, replyText } from '../data/mock';
 import { Badge, btnPrimary, btnSecondary, Logo, Reveal, SectionHeader } from './ui';
-
-const item2 = { name: '高分断小型断路器', sku: 'HD47H-63 4P C63', qty: 200, unitPrice: 38.5 };
 
 export function QuotePreview({
   stage,
   unitPrice,
+  replacementUnitPrice,
   notify,
   onNext,
 }: {
   stage: Stage;
   unitPrice: number;
+  replacementUnitPrice: number;
   notify: (m: string) => void;
   onNext: () => void;
 }) {
   const [copied, setCopied] = useState(false);
   const [exporting, setExporting] = useState(false);
 
-  const p1 = { name: '小型断路器', sku: 'HD47-63 2P C32', qty: 500, unitPrice };
+  const p1 = { ...quoteItems.primary, unitPrice };
+  const item2 = { ...quoteItems.replacement, unitPrice: replacementUnitPrice };
   const total = p1.qty * unitPrice + item2.qty * item2.unitPrice;
 
   const copy = async () => {
@@ -78,7 +79,7 @@ export function QuotePreview({
 
       <div className="grid gap-5 lg:grid-cols-[1.12fr_1fr]">
         <Reveal delay={60}>
-          <QuoteDocument p1={p1} total={total} fmt={fmt} />
+          <QuoteDocument p1={p1} item2={item2} total={total} fmt={fmt} />
         </Reveal>
         <Reveal delay={140}>
           <CustomerReply copied={copied} exporting={exporting} onCopy={copy} onExport={doExport} />
@@ -101,10 +102,12 @@ export function QuotePreview({
 /* ---------- 报价单文档预览 ---------- */
 function QuoteDocument({
   p1,
+  item2,
   total,
   fmt,
 }: {
-  p1: { name: string; sku: string; qty: number; unitPrice: number };
+  p1: { name: string; sku: string; qty: number; family: string; unitPrice: number };
+  item2: { name: string; sku: string; qty: number; family: string; unitPrice: number };
   total: number;
   fmt: (n: number) => string;
 }) {
@@ -181,14 +184,14 @@ function Row({
   item,
   fmt,
 }: {
-  item: { name: string; sku: string; qty: number; unitPrice: number };
+  item: { name: string; sku: string; qty: number; family: string; unitPrice: number };
   fmt: (n: number) => string;
 }) {
   return (
     <tr className="border-b border-line-2">
       <td className="py-3.5 pr-3">
         <div className="font-medium text-ink">{item.name}</div>
-        <div className="text-[11px] text-ink-3">小型断路器 · MCB</div>
+        <div className="text-[11px] text-ink-3">{item.family}</div>
       </td>
       <td className="py-3.5 pr-3 font-mono text-[13px] text-ink">{item.sku}</td>
       <td className="tnum py-3.5 pr-3 text-right">{item.qty}</td>

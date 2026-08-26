@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { ArrowRight, Check } from 'lucide-react';
 import type { Stage } from '../types';
-import { customers, historicalQuotes, pricingRule } from '../data/mock';
+import { customers, historicalQuotes, pricingRule, quoteItems, replacementPricingRule } from '../data/mock';
 import { Badge, btnPrimary, Reveal, SectionHeader } from './ui';
 
 export function PricingContext({ stage, onNext }: { stage: Stage; onNext: () => void }) {
@@ -29,6 +29,10 @@ export function PricingContext({ stage, onNext }: { stage: Stage; onNext: () => 
           <PricingRulesCard />
         </Reveal>
       </div>
+
+      <Reveal delay={60}>
+        <ReplacementPricingCard />
+      </Reveal>
 
       <Reveal delay={60}>
         <PriceRangeCard />
@@ -179,6 +183,38 @@ function PricingRulesCard() {
         低于 ¥{pricingRule.approvalThreshold.toFixed(2)} 的报价需提交销售经理审批。
       </div>
     </CardShell>
+  );
+}
+
+/* ---------- 第二项技术替代报价 ---------- */
+function ReplacementPricingCard() {
+  return (
+    <div className="mt-5 rounded-2xl border border-amber/25 bg-amber-soft/15 p-5 sm:p-7">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h3 className="text-sm font-semibold text-ink">第二项报价依据</h3>
+          <p className="mt-1 text-xs text-ink-3">客户要求 10kA，因此不能沿用普通 6kA 型号的价格</p>
+        </div>
+        <Badge tone="amber">技术替代型号</Badge>
+      </div>
+
+      <div className="mt-5 grid gap-x-8 gap-y-1 sm:grid-cols-2 lg:grid-cols-3">
+        <InfoRow label="客户要求" value="DZ47-63 4P C63 · 200只" />
+        <InfoRow label="采用型号" value={quoteItems.replacement.sku} />
+        <InfoRow label="分断能力 / 认证" value="10kA · CCC" />
+        <InfoRow label="库存 / 交期" value="350只 · 3天" />
+        <InfoRow label="目录标准价" value={`¥${replacementPricingRule.standardPrice.toFixed(2)}`} />
+        <InfoRow label="建议报价" value={`¥${replacementPricingRule.suggestedPrice.toFixed(2)} / pc`} />
+      </div>
+
+      <div className="mt-4 rounded-lg bg-surface/70 px-4 py-3 text-xs leading-relaxed text-ink-2">
+        未找到该替代型号的对应历史成交样本，本次按目录标准价、库存和 B 级客户授权区间生成建议价：
+        <span className="tnum ml-1 font-semibold text-ink">
+          ¥{replacementPricingRule.minAuthorized.toFixed(2)} – ¥{replacementPricingRule.maxAuthorized.toFixed(2)}
+        </span>
+        。
+      </div>
+    </div>
   );
 }
 

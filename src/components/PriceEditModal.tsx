@@ -3,6 +3,7 @@ import { Check, TriangleAlert, X } from 'lucide-react';
 
 export function PriceEditModal({
   open,
+  productSummary,
   suggested,
   min,
   max,
@@ -11,6 +12,7 @@ export function PriceEditModal({
   onApprove,
 }: {
   open: boolean;
+  productSummary: string;
   suggested: number;
   min: number;
   max: number;
@@ -45,7 +47,7 @@ export function PriceEditModal({
             <X size={16} />
           </button>
         </div>
-        <p className="mt-1 text-xs text-ink-3">HD47-63 2P C32 · 500只 · 含税含运费</p>
+        <p className="mt-1 text-xs text-ink-3">{productSummary} · 含税含运费</p>
 
         <div className="mt-6 flex items-center gap-2 rounded-xl border border-line bg-paper/60 px-4 py-4 transition-colors focus-within:border-accent focus-within:ring-2 focus-within:ring-accent/15">
           <span className="text-lg font-medium text-ink-3">¥</span>
