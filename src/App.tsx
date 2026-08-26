@@ -14,9 +14,11 @@ import { QuotePreview } from './components/QuotePreview';
 import { ValueComparison } from './components/ValueComparison';
 import { LeadCTA } from './components/LeadCTA';
 import { CTAFormModal } from './components/CTAFormModal';
+import { ContextualLeadCTA } from './components/ContextualLeadCTA';
 import { defaultRfq, pricingRule } from './data/mock';
 import { electricalRfqWorkflow } from './config/workflows';
 import { track } from './lib/analytics';
+import type { LeadFormPlacement } from './services/lead';
 import type { Stage } from './types';
 
 const STAGES: Stage[] = [
@@ -50,6 +52,7 @@ export default function App() {
   const [toast, setToast] = useState<string | null>(null);
   const [priceModal, setPriceModal] = useState(false);
   const [leadModal, setLeadModal] = useState(false);
+  const [leadFormPlacement, setLeadFormPlacement] = useState<LeadFormPlacement>('final_cta');
 
   const extractedRef = useRef<HTMLDivElement>(null);
   const matchRef = useRef<HTMLDivElement>(null);
@@ -81,6 +84,12 @@ export default function App() {
     setStage('extracted');
     track('rfq_analyzed');
     scrollTo(extractedRef);
+  };
+
+  const openLeadForm = (placement: LeadFormPlacement) => {
+    setLeadFormPlacement(placement);
+    track('lead_form_opened', { placement });
+    setLeadModal(true);
   };
 
   const handleMatchStart = () => {
@@ -120,7 +129,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-paper text-ink">
-      <Header progress={PROGRESS[stage]} />
+      <Header progress={PROGRESS[stage]} onLeadOpen={() => openLeadForm('header')} />
 
       <main>
         <Hero />
@@ -155,6 +164,9 @@ export default function App() {
               onAlternative={handleAlternative}
               notify={notify}
             />
+            {stage !== 'matching' && (
+              <ContextualLeadCTA onOpen={() => openLeadForm('after_product_match')} />
+            )}
           </section>
         )}
 
@@ -189,12 +201,7 @@ export default function App() {
           <section ref={summaryRef} className="mx-auto max-w-[1200px] scroll-mt-20 px-5 pb-24 pt-16">
             <div className="space-y-24">
               <ValueComparison />
-              <LeadCTA
-                onOpen={() => {
-                  track('lead_form_opened');
-                  setLeadModal(true);
-                }}
-              />
+              <LeadCTA onOpen={() => openLeadForm('final_cta')} />
             </div>
           </section>
         )}
@@ -233,7 +240,11 @@ export default function App() {
       />
 
       {/* 企业测试申请弹窗 */}
-      <CTAFormModal open={leadModal} onClose={() => setLeadModal(false)} />
+      <CTAFormModal
+        open={leadModal}
+        onClose={() => setLeadModal(false)}
+        leadFormPlacement={leadFormPlacement}
+      />
 
       {/* Toast */}
       {toast && (

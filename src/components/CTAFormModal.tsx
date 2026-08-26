@@ -5,7 +5,7 @@ import { electricalRfqWorkflow } from '../config/workflows';
 import { readLeadAttribution } from '../lib/leadAttribution';
 import { track } from '../lib/analytics';
 import { submitLead } from '../services/lead';
-import type { LeadPayload, SubmitLeadError } from '../services/lead';
+import type { LeadFormPlacement, LeadPayload, SubmitLeadError } from '../services/lead';
 import { btnPrimary, btnSecondary } from './ui';
 
 const volumeOptions = ['少于10条', '10～30条', '30～100条', '100条以上', '不清楚'];
@@ -75,7 +75,15 @@ function getSubmitErrorMessage(error: SubmitLeadError) {
   }
 }
 
-export function CTAFormModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function CTAFormModal({
+  open,
+  onClose,
+  leadFormPlacement,
+}: {
+  open: boolean;
+  onClose: () => void;
+  leadFormPlacement: LeadFormPlacement;
+}) {
   const [company, setCompany] = useState('');
   const [name, setName] = useState('');
   const [contact, setContact] = useState('');
@@ -129,6 +137,7 @@ export function CTAFormModal({ open, onClose }: { open: boolean; onClose: () => 
     mainProducts: product.trim() || undefined,
     dailyRfqs: volume || undefined,
     consent,
+    leadFormPlacement,
     ...attribution,
     pageUrl: window.location.href,
     referrer: document.referrer || undefined,
@@ -154,23 +163,23 @@ export function CTAFormModal({ open, onClose }: { open: boolean; onClose: () => 
     if (payload.website) {
       setStatus('error');
       setError('请检查网络后重新尝试。');
-      track('lead_submit_failed', { error: 'INVALID_INPUT' });
+      track('lead_submit_failed', { error: 'INVALID_INPUT', leadFormPlacement });
       return;
     }
 
     setStatus('submitting');
-    track('lead_submit_started');
+    track('lead_submit_started', { leadFormPlacement });
     const result = await submitLead(payload);
 
     if (attempt !== attemptRef.current) return;
 
     if (result.success) {
       setStatus('success');
-      track('lead_submit_success');
+      track('lead_submit_success', { leadFormPlacement });
     } else {
       setStatus('error');
       setError(getSubmitErrorMessage(result.error));
-      track('lead_submit_failed', { error: result.error });
+      track('lead_submit_failed', { error: result.error, leadFormPlacement });
     }
   };
 

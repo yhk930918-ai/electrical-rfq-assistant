@@ -1,3 +1,5 @@
+export type LeadFormPlacement = 'header' | 'after_product_match' | 'final_cta';
+
 export interface LeadPayload {
   workflowId: string;
   workflowName: string;
@@ -10,6 +12,8 @@ export interface LeadPayload {
   dailyRfqs?: string;
 
   consent: boolean;
+
+  leadFormPlacement: LeadFormPlacement;
 
   targetCompany?: string;
   campaign?: string;

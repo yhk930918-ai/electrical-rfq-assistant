@@ -1,5 +1,5 @@
 import { ArrowRight } from 'lucide-react';
-import { btnPrimary, btnSecondary, Reveal } from './ui';
+import { btnPrimary, Reveal } from './ui';
 
 export function LeadCTA({ onOpen }: { onOpen: () => void }) {
   return (
@@ -9,18 +9,13 @@ export function LeadCTA({ onOpen }: { onOpen: () => void }) {
           想知道它在你们公司能不能用？
         </h2>
         <p className="mx-auto mt-4 max-w-[600px] text-[15px] leading-relaxed text-ink-2">
-          提供{' '}
-          <span className="font-medium text-ink">20～50 条历史询价</span>、
-          <span className="font-medium text-ink">产品目录</span> 与{' '}
-          <span className="font-medium text-ink">部分历史报价</span>，即可测试：询价识别情况、
-          产品匹配准确度、可辅助报价比例、哪些询价必须人工处理，以及可以减少哪些重复步骤。
+          提供 <span className="font-medium text-ink">20～50 条历史询价</span> 和{' '}
+          <span className="font-medium text-ink">产品目录</span>，可以实际测试：询价识别情况、
+          产品匹配情况、哪些步骤可以自动整理、哪些询价仍然需要人工判断。
         </p>
-        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <button className={btnPrimary + ' px-6 py-3 text-[15px]'} onClick={onOpen}>
-            用我司历史询价测试 <ArrowRight size={16} />
-          </button>
-          <button className={btnSecondary} onClick={onOpen}>
-            预约企业专属 Demo
+        <div className="mt-8 flex justify-center">
+          <button type="button" className={btnPrimary + ' px-6 py-3 text-[15px]'} onClick={onOpen}>
+            申请企业测试 <ArrowRight size={16} />
           </button>
         </div>
       </div>
